@@ -1,0 +1,8 @@
+/* .container{
+  background: linear-gradient(to right, #ffa751, #ffe259);
+} */
+.bg{
+  background-image: url(../../assets/img/imagem.jpg);
+  background-position: center center;
+
+}
