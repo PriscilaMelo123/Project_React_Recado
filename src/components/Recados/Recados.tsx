@@ -1,16 +1,51 @@
-import { useContext } from "react";
-import { Link } from "react-router-dom";
+import React from "react";
+import axios from "axios";
+import { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../../contexts/Auth/AuthContext";
+import { Recado } from "../../types/User";
 import "./Recados.css";
 
-const Recados: any = () => {
+interface ITask {
+  ok: boolean;
+  created_at: Date;
+  updated_at: Date;
+  description: string;
+  detail: string;
+  id: string;
+  data: [];
+}
+
+export const Recados: any = () => {
   const auth = useContext(AuthContext);
-  // const storageData = localStorage.getItem("authData");
 
   const handleLogout = async () => {
     await auth.signout();
     window.location.href = window.location.href;
   };
+
+  const api = axios.create({
+    baseURL: process.env.REACT_APP_API,
+  });
+
+  const [tasks, setTasks] = useState<ITask[]>([]);
+  debugger;
+
+  useEffect(() => {
+    loadTask();
+  }, []);
+
+  async function loadTask() {
+    if (auth.user?.data.userId) {
+      debugger;
+      const tasks = await api.get(
+        `/task/readTasksByUserId?token=${auth.user.data.token}`
+      );
+
+      setTasks(tasks.data.data);
+      console.log(tasks.data.data);
+    }
+  }
+
   return (
     <>
       <div className='container mt-5 rounded-4 shadow'>
@@ -24,8 +59,8 @@ const Recados: any = () => {
                   <Link to='/'>Home</Link>
                 </div> */}
                 <div className='col-12 col-sm-1 m-1'>
-                  {/* {storageData}
-                  {auth.user?.data.name} */}
+                  {/* {storageData} */}
+                  {auth.user?.data.userName}
                   {auth.user && (
                     <button onClick={handleLogout} className='btn btn-primary'>
                       Sair
@@ -74,45 +109,22 @@ const Recados: any = () => {
                   </tr>
                 </thead>
                 <tbody className='table-group-divider'>
-                  {/* <!-- <tr id="tr-recados">
-							<td>Titulo Exemplo</td>
-							<td>Descrição Exemplo</td>
-							<td>
-								<button className="btn btn-primary m-1">Editar</button>
-								<button className="btn btn-danger m-1">Apagar</button>
-							</td>
-						</tr> --> */}
+                  {tasks.map((task) => (
+                    <tr key={task.id}>
+                      <td className='text-start'>{task.description}</td>
+                      <td className='text-start'>{task.detail}</td>
+                      <td>
+                        <button className='btn btn-primary m-1'>Editar</button>
+                        <button className='btn btn-danger m-1'>Apagar</button>
+                      </td>
+                    </tr>
+                  ))}
                 </tbody>
               </table>
             </div>
           </main>
-
-          {/* <!-- <div>
-			<table className="tabela-recados" id="note-table">
-				<thead>
-					<tr>
-						<th>Descrição</th>
-						<th>Detalhamento</th>
-						<th>Ações</th>
-					</tr>
-				</thead>
-
-				<tbody>
-					<tr id="tr-recados">
-                        <td>Titulo Exemplo</td>
-                        <td>Descrição Exemplo</td>
-                        <td>
-                            <button className="btn-editar">Editar</button>
-                            <button className="btn-apagar">Apagar</button>
-                        </td>
-                    </tr>
-				</tbody>
-			</table>
-		</div> --> */}
         </div>
       </div>
     </>
   );
 };
-
-export { Recados };

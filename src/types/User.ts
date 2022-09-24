@@ -15,13 +15,16 @@ export interface Login {
 export interface Data {
   id: string;
   name: string;
-  tasks: Recados[];
+  tasks: Recado;
   token: string;
   pass: string;
   Rpass: string;
+  userName: string;
+  userId: string;
 }
 
-export interface Recados {
+export interface Recado {
+  data: [];
   id_task: string;
   description: string;
   detail: string;

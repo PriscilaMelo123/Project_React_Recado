@@ -6,6 +6,7 @@ export type AuthContextType = {
   signin: (name: string, pass: string) => Promise<boolean>;
   signup: (name: string, pass: string, Rpass: string) => Promise<boolean>;
   signout: () => void;
+  // loadTask: (token: string) => Promise<boolean>;
 };
 
 export const AuthContext = createContext<AuthContextType>(null!);

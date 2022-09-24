@@ -16,7 +16,6 @@ export const useApi = () => ({
     return response.data;
   },
   signup: async (name: string, pass: string, Rpass: string) => {
-    debugger;
     const response = await api.post("/user", { name, pass, Rpass });
     return response.data;
   },
@@ -25,4 +24,10 @@ export const useApi = () => ({
     const response = await api.post("/logout");
     return response.status;
   },
+  // loadTask: async (token: string) => {
+  //   debugger;
+  //   const response = await api.get("/tasks/readTasksByUserId");
+  //   console.log(response);
+  //   return response;
+  // },
 });

@@ -20,6 +20,17 @@ export const AuthProvider = ({ children }: { children: JSX.Element }) => {
   //   validateToken();
   // }, [api]);
 
+  // useEffect(() => {
+  //   const testeTask = async () => {
+  //     const storageTask = localStorage.getItem("authToken");
+  //     if (storageTask) {
+  //       const task = await api.loadTask(storageTask);
+  //       console.log(task);
+  //     }
+  //   };
+  //   testeTask();
+  // }, [api]);
+
   const signin = async (name: string, pass: string) => {
     const data = await api.signin(name, pass);
     if (data.ok) {
@@ -54,9 +65,20 @@ export const AuthProvider = ({ children }: { children: JSX.Element }) => {
     localStorage.setItem("authToken", token);
   };
 
-  const setData = (name: string) => {
-    localStorage.setItem("authData", name);
+  const setData = (data: any) => {
+    localStorage.setItem("authData", data);
   };
+
+  // const loadTask = async (token: string) => {
+  //   const teste = await api.loadTask(token);
+  //   debugger;
+  //   console.log(teste);
+  //   if (token) {
+  //     console.log("ola");
+  //     return true;
+  //   }
+  //   return false;
+  // };
 
   return (
     <AuthContext.Provider value={{ user, signin, signup, signout }}>
