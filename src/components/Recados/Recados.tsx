@@ -28,7 +28,6 @@ export const Recados: any = () => {
   });
 
   const [tasks, setTasks] = useState<ITask[]>([]);
-  debugger;
 
   useEffect(() => {
     loadTask();
@@ -36,13 +35,12 @@ export const Recados: any = () => {
 
   async function loadTask() {
     if (auth.user?.data.userId) {
-      debugger;
       const tasks = await api.get(
         `/task/readTasksByUserId?token=${auth.user.data.token}`
       );
 
       setTasks(tasks.data.data);
-      console.log(tasks.data.data);
+      //console.log(tasks.data.data);
     }
   }
 
@@ -54,20 +52,18 @@ export const Recados: any = () => {
             {/* <!--CABEÇALHO--> */}
             <div className=''>
               <h1 className='fw-bold text-start p-2'>Meus Recados</h1>
-              <div className='row'>
-                {/* <div className='col-12 col-sm-5 m-1'>
-                  <Link to='/'>Home</Link>
-                </div> */}
-                <div className='col-12 col-sm-1 m-1'>
-                  {/* {storageData} */}
+              <h2 className='text-center p-2'>
+                Bem vindo -{" "}
+                <span className='text-center text-decoration-underline fs-4 p-2'>
                   {auth.user?.data.userName}
-                  {auth.user && (
-                    <button onClick={handleLogout} className='btn btn-primary'>
-                      Sair
-                    </button>
-                  )}
-                </div>
-              </div>
+                </span>
+                {auth.user && (
+                  <button onClick={handleLogout} className='btn btn-primary'>
+                    Sair
+                  </button>
+                )}
+              </h2>
+
               <form action='' className='row mt-2 bg-white'>
                 <div className='col-12 col-sm-5 m-1'>
                   <input
@@ -105,7 +101,7 @@ export const Recados: any = () => {
                   <tr className='fw-bold text-start'>
                     <th>Descrição</th>
                     <th>Detalhamento</th>
-                    <th>Ações</th>
+                    <th className='text-center'>Ações</th>
                   </tr>
                 </thead>
                 <tbody className='table-group-divider'>
