@@ -2,18 +2,21 @@ import React from "react";
 import axios from "axios";
 import { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../../contexts/Auth/AuthContext";
-import { Recado } from "../../types/User";
 import "./Recados.css";
+import { Button, Form } from "react-bootstrap";
+import { Formulario } from "../Formulario/Formulario";
+import { Login, Recado } from "../../types/User";
+import { api, useApi } from "../../hooks/useApi";
 
-interface ITask {
-  ok: boolean;
-  created_at: Date;
-  updated_at: Date;
-  description: string;
-  detail: string;
-  id: string;
-  data: [];
-}
+// interface ITask {
+//   ok: boolean;
+//   created_at: Date;
+//   updated_at: Date;
+//   description: string;
+//   detail: string;
+//   id: string;
+//   data: [];
+// }
 
 export const Recados: any = () => {
   const auth = useContext(AuthContext);
@@ -23,11 +26,7 @@ export const Recados: any = () => {
     window.location.href = window.location.href;
   };
 
-  const api = axios.create({
-    baseURL: process.env.REACT_APP_API,
-  });
-
-  const [tasks, setTasks] = useState<ITask[]>([]);
+  const [tasks, setTasks] = useState<Recado[]>([]);
 
   useEffect(() => {
     loadTask();
@@ -63,8 +62,10 @@ export const Recados: any = () => {
                   </button>
                 )}
               </h2>
-
-              <form action='' className='row mt-2 bg-white'>
+              <div>
+                <Formulario />
+              </div>
+              {/* <form action='' className='row mt-2 bg-white'>
                 <div className='col-12 col-sm-5 m-1'>
                   <input
                     type='text'
@@ -91,7 +92,7 @@ export const Recados: any = () => {
                     id='btn-post'
                   />
                 </div>
-              </form>
+              </form> */}
             </div>
           </header>
           <main>
@@ -106,7 +107,7 @@ export const Recados: any = () => {
                 </thead>
                 <tbody className='table-group-divider'>
                   {tasks.map((task) => (
-                    <tr key={task.id}>
+                    <tr key={task.id_task}>
                       <td className='text-start'>{task.description}</td>
                       <td className='text-start'>{task.detail}</td>
                       <td>

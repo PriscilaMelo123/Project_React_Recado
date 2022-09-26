@@ -69,19 +69,34 @@ export const AuthProvider = ({ children }: { children: JSX.Element }) => {
     localStorage.setItem("authData", data);
   };
 
-  // const loadTask = async (token: string) => {
-  //   const teste = await api.loadTask(token);
-  //   debugger;
-  //   console.log(teste);
-  //   if (token) {
-  //     console.log("ola");
-  //     return true;
-  //   }
-  //   return false;
-  // };
+  const createTask = async (
+    description: string,
+    detail: string,
+    token: string
+  ) => {
+    const data = await api.createTask(description, detail, token);
+    if (data.ok) {
+      setUser(data);
+      setData(data.data.data);
+      return true;
+    }
+    return false;
+  };
+
+  const loadTask = async (token: string) => {
+    const data = await api.loadTask(token);
+    console.log(data);
+    if (token) {
+      setUser(data.data);
+      return true;
+    }
+    return false;
+  };
 
   return (
-    <AuthContext.Provider value={{ user, signin, signup, signout }}>
+    <AuthContext.Provider
+      value={{ user, signin, signup, signout, createTask, loadTask }}
+    >
       {children}
     </AuthContext.Provider>
   );

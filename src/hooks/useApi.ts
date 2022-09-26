@@ -1,7 +1,7 @@
 /* eslint-disable no-unreachable */
 import axios from "axios";
 
-const api = axios.create({
+export const api = axios.create({
   baseURL: process.env.REACT_APP_API,
 });
 
@@ -19,6 +19,18 @@ export const useApi = () => ({
     const response = await api.post("/user", { name, pass, Rpass });
     return response.data;
   },
+
+  createTask: async (description: string, detail: string, token: string) => {
+    const response = await api.post("/task/", { description, detail, token });
+    return response.data;
+  },
+
+  loadTask: async (token: string) => {
+    const response = await api.get(`/task/readTasksByUserId?token=${token}`);
+    console.log(response.data);
+    return response.data;
+  },
+
   logout: async () => {
     return { status: true };
     const response = await api.post("/logout");
