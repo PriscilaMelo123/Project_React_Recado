@@ -3,6 +3,8 @@ import { ChangeEvent, useContext, useEffect, useState } from "react";
 import { Button, Form } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import { AuthContext, AuthContextType } from "../../contexts/Auth/AuthContext";
+import { api } from "../../hooks/useApi";
+import { Recado } from "../../types/User";
 
 // interface ITask {
 //   description: string;
@@ -30,14 +32,6 @@ export const Formulario: any = () => {
   const auth = useContext(AuthContext);
   const navigate = useNavigate();
 
-  // const api = axios.create({
-  //   baseURL: process.env.REACT_APP_API,
-  // });
-
-  const token = localStorage.getItem("authToken");
-
-  // console.log(token);
-
   // function updatedModel(e: ChangeEvent<HTMLInputElement>) {
   //   setModel({
   //     ...model,
@@ -45,9 +39,12 @@ export const Formulario: any = () => {
   //   });
   // }
 
+  const token = localStorage.getItem("authToken");
   const [description, setDescription] = useState("");
   const [detail, setDetail] = useState("");
   const [tk, setTk] = useState("");
+
+  const [tasks, setTasks] = useState<Recado[]>([]);
 
   const handleDescriptionInput = (event: ChangeEvent<HTMLInputElement>) => {
     setDescription(event.target.value);
@@ -60,19 +57,18 @@ export const Formulario: any = () => {
   const createTk = async () => {
     if (token) {
       const tk = await auth.createTask(description, detail, token);
-      //debugger;
       if (tk) {
-        navigate("/private");
-      } else {
-        alert("Não deu certo.");
+        const tasks = await api.get(`/task/readTasksByUserId?token=${token}`);
+        setTasks(tasks.data.data);
+
+        //   console.log(tasks.data.data);
+        //   navigate("/private");
+        // } else {
+        //   alert("Não deu certo.");
+        // }
       }
     }
   };
-
-  // const api = axios.create({
-  //   baseURL: process.env.REACT_APP_API,
-  // });
-
   // const [tasks, setTasks] = useState<ITask[]>([]);
 
   // useEffect(() => {
@@ -89,20 +85,20 @@ export const Formulario: any = () => {
   //     //console.log(tasks.data.data);
   //   }
   // }
-  // async function onSubmit(e: ChangeEvent<HTMLFormElement>, token: AuthContextType) {
-  //   e.preventDefault();
-  //   debugger;
+  async function onSubmit(e: ChangeEvent<HTMLFormElement>) {
+    e.preventDefault();
 
-  //   if (auth.user?.ok) {
-  //     const response = await api.post("/task/", { e, auth.user.data.token });
-  //     console.log(response);
-  //   }
-  // }
+    //debugger;
+    setDescription(description);
+    setDetail(detail);
+    createTk();
+    navigate("/private");
+  }
 
   return (
     <>
       <div className='container'>
-        <Form className='row  mt-2 bg-white'>
+        <Form className='row  mt-2 bg-white' onSubmit={onSubmit}>
           <Form.Group className='col-12 col-sm-5 m-1'>
             <Form.Control
               type='text'
@@ -122,7 +118,8 @@ export const Formulario: any = () => {
           <Button
             className=' btn col-12 col-sm-1 m-1'
             variant='success'
-            onClick={createTk}
+            // onClick={createTk}
+            type='submit'
           >
             Salvar
           </Button>

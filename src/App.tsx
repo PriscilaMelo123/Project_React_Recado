@@ -5,6 +5,7 @@ import { Private } from "./pages/Private";
 import { Recados } from "./components/Recados/Recados";
 import { Login } from "./pages/Login";
 import { CriarLogin } from "./pages/CriarLogin";
+import { Formulario } from "./components/Formulario/Formulario";
 
 function App() {
   return (
@@ -24,6 +25,7 @@ function App() {
         <Route path='/' element={<Login />} />
         <Route path='/signup' element={<CriarLogin />} />
         <Route path='/tasks' element={<Recados />} />
+        <Route path='/new_tasks' element={<Formulario />} />
         <Route
           path='/private'
           element={

@@ -1,5 +1,6 @@
 /* eslint-disable no-unreachable */
 import axios from "axios";
+import { Recados } from "../components/Recados/Recados";
 
 export const api = axios.create({
   baseURL: process.env.REACT_APP_API,
@@ -13,6 +14,7 @@ export const useApi = () => ({
   // },
   signin: async (name: string, pass: string) => {
     const response = await api.post("/user/login", { name, pass });
+    //console.log(response.data);
     return response.data;
   },
   signup: async (name: string, pass: string, Rpass: string) => {
@@ -27,7 +29,6 @@ export const useApi = () => ({
 
   loadTask: async (token: string) => {
     const response = await api.get(`/task/readTasksByUserId?token=${token}`);
-    console.log(response.data);
     return response.data;
   },
 

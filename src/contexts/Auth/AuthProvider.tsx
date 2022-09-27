@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useApi } from "../../hooks/useApi";
 import { Login } from "../../types/User";
 import { AuthContext } from "./AuthContext";
@@ -7,18 +7,21 @@ export const AuthProvider = ({ children }: { children: JSX.Element }) => {
   const [user, setUser] = useState<Login | null>(null);
   const api = useApi();
 
-  // useEffect(() => {
-  //   const validateToken = async () => {
-  //     const storageData = localStorage.getItem("authToken");
-  //     if (storageData) {
-  //       const data = await api.validateToken(storageData);
-  //       if (data.ok) {
-  //         setUser(data);
-  //       }
-  //     }
-  //   };
-  //   validateToken();
-  // }, [api]);
+  const auth = useContext(AuthContext);
+
+  useEffect(() => {
+    validateToken();
+  }, []);
+
+  const validateToken = async () => {
+    const storageData = localStorage.getItem("authToken");
+    if (storageData) {
+      const data = await api.loadTask(storageData);
+      if (data.ok) {
+        setUser(data);
+      }
+    }
+  };
 
   // useEffect(() => {
   //   const testeTask = async () => {
@@ -30,13 +33,20 @@ export const AuthProvider = ({ children }: { children: JSX.Element }) => {
   //   };
   //   testeTask();
   // }, [api]);
+  const loadTask = async (token: string) => {
+    if (auth.user?.data.userId) {
+      const tasks = await api.loadTask(token);
+      setUser(tasks.data.data);
+      //console.log(tasks.data.data);
+      // localStorage.setItem("authData", tasks.data.data);
+    }
+  };
 
   const signin = async (name: string, pass: string) => {
     const data = await api.signin(name, pass);
     if (data.ok) {
       setUser(data);
       setToken(data.data.token);
-      setData(data.data.task);
       return true;
     }
     return false;
@@ -47,7 +57,6 @@ export const AuthProvider = ({ children }: { children: JSX.Element }) => {
     if (data.ok) {
       setUser(data);
       setToken(data.data.token);
-      setData(data.data.name);
       return true;
     }
     return false;
@@ -77,21 +86,20 @@ export const AuthProvider = ({ children }: { children: JSX.Element }) => {
     const data = await api.createTask(description, detail, token);
     if (data.ok) {
       setUser(data);
-      setData(data.data.data);
       return true;
     }
     return false;
   };
 
-  const loadTask = async (token: string) => {
-    const data = await api.loadTask(token);
-    console.log(data);
-    if (token) {
-      setUser(data.data);
-      return true;
-    }
-    return false;
-  };
+  // const loadTask = async (token: string) => {
+  //   const data = await api.loadTask(token);
+  //   console.log(data);
+  //   if (token) {
+  //     setUser(data.data);
+  //     return true;
+  //   }
+  //   return false;
+  // };
 
   return (
     <AuthContext.Provider

@@ -7,26 +7,29 @@ import { Button, Form } from "react-bootstrap";
 import { Formulario } from "../Formulario/Formulario";
 import { Login, Recado } from "../../types/User";
 import { api, useApi } from "../../hooks/useApi";
+import { useNavigate } from "react-router-dom";
 
-// interface ITask {
-//   ok: boolean;
-//   created_at: Date;
-//   updated_at: Date;
-//   description: string;
-//   detail: string;
-//   id: string;
-//   data: [];
-// }
+interface ITask {
+  ok: boolean;
+  created_at: Date;
+  updated_at: Date;
+  description: string;
+  detail: string;
+  id: string;
+  data: [];
+}
 
 export const Recados: any = () => {
   const auth = useContext(AuthContext);
+  const navigate = useNavigate();
 
   const handleLogout = async () => {
     await auth.signout();
     window.location.href = window.location.href;
   };
 
-  const [tasks, setTasks] = useState<Recado[]>([]);
+  const [tasks, setTasks] = useState<ITask[]>([]);
+  const token = localStorage.getItem("authToken");
 
   useEffect(() => {
     loadTask();
@@ -37,10 +40,22 @@ export const Recados: any = () => {
       const tasks = await api.get(
         `/task/readTasksByUserId?token=${auth.user.data.token}`
       );
-
+      console.log(tasks.data.data);
       setTasks(tasks.data.data);
-      //console.log(tasks.data.data);
     }
+  }
+
+  function newTask() {
+    navigate("/new_tasks");
+  }
+
+  async function deletTask(id: string) {
+    const token = localStorage.getItem("authToken");
+    if (auth.user?.ok) {
+      const del = await api.delete(`/task/${id}?token=${token}`);
+      console.log(del);
+    }
+    loadTask();
   }
 
   return (
@@ -63,7 +78,10 @@ export const Recados: any = () => {
                 )}
               </h2>
               <div>
-                <Formulario />
+                <button onClick={newTask} className='btn btn-dark'>
+                  Nova Task
+                </button>
+                {/* <Formulario /> */}
               </div>
               {/* <form action='' className='row mt-2 bg-white'>
                 <div className='col-12 col-sm-5 m-1'>
@@ -107,12 +125,17 @@ export const Recados: any = () => {
                 </thead>
                 <tbody className='table-group-divider'>
                   {tasks.map((task) => (
-                    <tr key={task.id_task}>
+                    <tr key={task.id}>
                       <td className='text-start'>{task.description}</td>
                       <td className='text-start'>{task.detail}</td>
                       <td>
                         <button className='btn btn-primary m-1'>Editar</button>
-                        <button className='btn btn-danger m-1'>Apagar</button>
+                        <button
+                          className='btn btn-danger m-1'
+                          onClick={() => deletTask(task.id)}
+                        >
+                          Apagar
+                        </button>
                       </td>
                     </tr>
                   ))}
