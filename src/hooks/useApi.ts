@@ -8,13 +8,12 @@ export const api = axios.create({
 
 export const useApi = () => ({
   //REVISAO-----NAO PRECISA DE VALIDATETOKEN
-  // validateToken: async (token: string) => {
-  //   const response = await api.post("/user/login", { token });
-  //   return response.data;
-  // },
+  validateToken: async (token: string) => {
+    const response = await api.get(`/task/readTasksByUserId?token=${token}`);
+    return response.data;
+  },
   signin: async (name: string, pass: string) => {
     const response = await api.post("/user/login", { name, pass });
-    //console.log(response.data);
     return response.data;
   },
   signup: async (name: string, pass: string, Rpass: string) => {
@@ -37,10 +36,4 @@ export const useApi = () => ({
     const response = await api.post("/logout");
     return response.status;
   },
-  // loadTask: async (token: string) => {
-  //   debugger;
-  //   const response = await api.get("/tasks/readTasksByUserId");
-  //   console.log(response);
-  //   return response;
-  // },
 });

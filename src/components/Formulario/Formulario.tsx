@@ -60,7 +60,7 @@ export const Formulario: any = () => {
       if (tk) {
         const tasks = await api.get(`/task/readTasksByUserId?token=${token}`);
         setTasks(tasks.data.data);
-
+        loadTask();
         //   console.log(tasks.data.data);
         //   navigate("/private");
         // } else {
@@ -93,6 +93,21 @@ export const Formulario: any = () => {
     setDetail(detail);
     createTk();
     navigate("/private");
+    loadTask();
+  }
+
+  useEffect(() => {
+    loadTask();
+  }, []);
+
+  async function loadTask() {
+    if (auth.user?.data.userId) {
+      const tasks = await api.get(
+        `/task/readTasksByUserId?token=${auth.user.data.token}`
+      );
+      //console.log(tasks.data.data);
+      setTasks(tasks.data.data);
+    }
   }
 
   return (

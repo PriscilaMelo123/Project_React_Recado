@@ -3,13 +3,10 @@ import axios from "axios";
 import { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../../contexts/Auth/AuthContext";
 import "./Recados.css";
-import { Button, Form } from "react-bootstrap";
-import { Formulario } from "../Formulario/Formulario";
-import { Login, Recado } from "../../types/User";
 import { api, useApi } from "../../hooks/useApi";
 import { useNavigate } from "react-router-dom";
 
-interface ITask {
+export interface ITask {
   ok: boolean;
   created_at: Date;
   updated_at: Date;
@@ -22,28 +19,23 @@ interface ITask {
 export const Recados: any = () => {
   const auth = useContext(AuthContext);
   const navigate = useNavigate();
+  const userToken = localStorage.getItem("authToken");
+
+  const usersStorage = localStorage.getItem("authData");
+  const [tasks, setTasks] = useState<ITask[]>([]);
 
   const handleLogout = async () => {
     await auth.signout();
     window.location.href = window.location.href;
   };
 
-  const [tasks, setTasks] = useState<ITask[]>([]);
-  const token = localStorage.getItem("authToken");
-
-  useEffect(() => {
-    loadTask();
-  }, []);
-
-  async function loadTask() {
-    if (auth.user?.data.userId) {
-      const tasks = await api.get(
-        `/task/readTasksByUserId?token=${auth.user.data.token}`
-      );
-      console.log(tasks.data.data);
+  const loadTask = async () => {
+    if (usersStorage) {
+      const tasks = await api.get(`/task/readTasksByUserId?token=${userToken}`);
+      //console.log(tasks.data.data);
       setTasks(tasks.data.data);
     }
-  }
+  };
 
   function newTask() {
     navigate("/new_tasks");
@@ -58,6 +50,11 @@ export const Recados: any = () => {
     loadTask();
   }
 
+  useEffect(() => {
+    //debugger;
+    loadTask();
+  }, [api]);
+
   return (
     <>
       <div className='container mt-5 rounded-4 shadow'>
@@ -71,11 +68,11 @@ export const Recados: any = () => {
                 <span className='text-center text-decoration-underline fs-4 p-2'>
                   {auth.user?.data.userName}
                 </span>
-                {auth.user && (
+                {
                   <button onClick={handleLogout} className='btn btn-primary'>
                     Sair
                   </button>
-                )}
+                }
               </h2>
               <div>
                 <button onClick={newTask} className='btn btn-dark'>
@@ -83,37 +80,10 @@ export const Recados: any = () => {
                 </button>
                 {/* <Formulario /> */}
               </div>
-              {/* <form action='' className='row mt-2 bg-white'>
-                <div className='col-12 col-sm-5 m-1'>
-                  <input
-                    type='text'
-                    name='descricao'
-                    id='input-descricao'
-                    placeholder='Descrição'
-                    className='form-control input-note'
-                  />
-                </div>
-                <div className='col-12 col-sm-5 m-1'>
-                  <input
-                    type='text'
-                    name='detalhametno'
-                    id='input-detalhamento'
-                    placeholder='Detalhamento'
-                    className='form-control input-note'
-                  />
-                </div>
-                <div className='col-12 col-sm-1 m-1'>
-                  <input
-                    type='button'
-                    value='Salvar'
-                    className='btn btn-success'
-                    id='btn-post'
-                  />
-                </div>
-              </form> */}
             </div>
           </header>
           <main>
+            {/* <!--LISTA RECADOS--> */}
             <div className='m-2 table-responsive'>
               <table className='table table-hover align-middle' id='note-table'>
                 <thead className=''>

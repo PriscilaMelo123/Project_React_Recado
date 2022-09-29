@@ -1,12 +1,14 @@
 import { useContext } from "react";
-import { Login } from "../../pages/Login";
+import { CriarLogin } from "../../pages/CriarLogin";
 import { AuthContext } from "./AuthContext";
 
 export const RequireAuth = ({ children }: { children: JSX.Element }) => {
   const auth = useContext(AuthContext);
 
-  if (!auth.user?.ok) {
-    return <Login />;
+  const userToken = localStorage.getItem("authToken");
+
+  if (!userToken) {
+    return <CriarLogin />;
   }
 
   return children;

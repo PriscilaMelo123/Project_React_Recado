@@ -1,4 +1,5 @@
 import { useContext, useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useApi } from "../../hooks/useApi";
 import { Login } from "../../types/User";
 import { AuthContext } from "./AuthContext";
@@ -6,40 +7,46 @@ import { AuthContext } from "./AuthContext";
 export const AuthProvider = ({ children }: { children: JSX.Element }) => {
   const [user, setUser] = useState<Login | null>(null);
   const api = useApi();
-
   const auth = useContext(AuthContext);
 
+  const userToken = localStorage.getItem("authToken");
+  const usersStorage = localStorage.getItem("authData");
+
   useEffect(() => {
-    validateToken();
+    if (userToken) {
+      api.validateToken(userToken);
+    }
+    // if (userToken && usersStorage) {
+    //   //debugger;
+    //   const hasUser = JSON.parse(usersStorage)?.filter(
+    //     (user: any) => user. === JSON.parse(userToken)
+    //   );
+
+    //   if (hasUser) setUser(hasUser[0]);
+    // }
   }, []);
 
-  const validateToken = async () => {
-    const storageData = localStorage.getItem("authToken");
-    if (storageData) {
-      const data = await api.loadTask(storageData);
-      if (data.ok) {
-        setUser(data);
-      }
-    }
-  };
-
   // useEffect(() => {
-  //   const testeTask = async () => {
-  //     const storageTask = localStorage.getItem("authToken");
-  //     if (storageTask) {
-  //       const task = await api.loadTask(storageTask);
-  //       console.log(task);
+  //   validateToken();
+  // }, []);
+
+  // const validateToken = async () => {
+  //   const storageData = localStorage.getItem("authToken");
+  //   if (storageData) {
+  //     const data = await api.loadTask(storageData);
+  //     if (data.ok) {
+  //       setUser(data);
   //     }
-  //   };
-  //   testeTask();
-  // }, [api]);
-  const loadTask = async (token: string) => {
-    if (auth.user?.data.userId) {
+  //   }
+  // };
+
+  const loadTask: any = async (token: string) => {
+    if (userToken) {
       const tasks = await api.loadTask(token);
       setUser(tasks.data.data);
-      //console.log(tasks.data.data);
-      // localStorage.setItem("authData", tasks.data.data);
+      return true;
     }
+    return false;
   };
 
   const signin = async (name: string, pass: string) => {
@@ -47,6 +54,7 @@ export const AuthProvider = ({ children }: { children: JSX.Element }) => {
     if (data.ok) {
       setUser(data);
       setToken(data.data.token);
+      setData(data);
       return true;
     }
     return false;
@@ -75,7 +83,7 @@ export const AuthProvider = ({ children }: { children: JSX.Element }) => {
   };
 
   const setData = (data: any) => {
-    localStorage.setItem("authData", data);
+    localStorage.setItem("authData", JSON.stringify(data));
   };
 
   const createTask = async (
@@ -90,16 +98,6 @@ export const AuthProvider = ({ children }: { children: JSX.Element }) => {
     }
     return false;
   };
-
-  // const loadTask = async (token: string) => {
-  //   const data = await api.loadTask(token);
-  //   console.log(data);
-  //   if (token) {
-  //     setUser(data.data);
-  //     return true;
-  //   }
-  //   return false;
-  // };
 
   return (
     <AuthContext.Provider
