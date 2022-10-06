@@ -24,11 +24,9 @@ export interface Data {
 }
 
 export interface Recado {
-  data: [];
-  id_task: string;
+  id: string;
   description: string;
   detail: string;
-  user_id?: string;
-  created_at?: string;
-  updated_at?: string;
+  created_at: string;
+  updated_at: string;
 }

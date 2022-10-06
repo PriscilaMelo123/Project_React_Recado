@@ -5,55 +5,61 @@ import { AuthContext } from "../../contexts/Auth/AuthContext";
 import "./Recados.css";
 import { api, useApi } from "../../hooks/useApi";
 import { useNavigate } from "react-router-dom";
-
-export interface ITask {
-  ok: boolean;
-  created_at: Date;
-  updated_at: Date;
-  description: string;
-  detail: string;
-  id: string;
-  data: [];
-}
+import { hasSubscribers } from "diagnostics_channel";
+import { Recado } from "../../types/User";
 
 export const Recados: any = () => {
   const auth = useContext(AuthContext);
   const navigate = useNavigate();
   const userToken = localStorage.getItem("authToken");
+  const userName = localStorage.getItem("authName");
+  const userId = localStorage.getItem("authId");
 
   const usersStorage = localStorage.getItem("authData");
-  const [tasks, setTasks] = useState<ITask[]>([]);
+
+  const [tasks, setTasks] = useState<Recado[]>([]);
+
+  function newTask() {
+    navigate("/new_tasks");
+  }
 
   const handleLogout = async () => {
     await auth.signout();
     window.location.href = window.location.href;
   };
 
-  const loadTask = async () => {
-    if (usersStorage) {
-      const tasks = await api.get(`/task/readTasksByUserId?token=${userToken}`);
-      //console.log(tasks.data.data);
-      setTasks(tasks.data.data);
+  const handleLoadTask = async () => {
+    if (userToken) {
+      const tasks = await auth.loadTask(userToken);
+      setTasks(tasks);
     }
   };
 
-  function newTask() {
-    navigate("/new_tasks");
-  }
+  // const handleDeletTask = async (id: string) => {
+  //   if (auth.user?.ok && userToken) {
+  //     debugger;
+  //     const del = await auth.deletTask(id, userToken);
+  //     console.log(del);
+  //   }
+  //   handleLoadTask();
+  // };
 
-  async function deletTask(id: string) {
-    const token = localStorage.getItem("authToken");
-    if (auth.user?.ok) {
-      const del = await api.delete(`/task/${id}?token=${token}`);
-      console.log(del);
+  async function handleDeletTask(id: string) {
+    if (usersStorage != null) {
+      const teste = JSON.parse(usersStorage);
+      if (teste.ok && userToken) {
+        const del = await auth.deletTask(id, userToken);
+        //debugger;
+        console.log(del);
+      }
     }
-    loadTask();
+    handleLoadTask();
   }
 
   useEffect(() => {
     //debugger;
-    loadTask();
-  }, [api]);
+    handleLoadTask();
+  }, []);
 
   return (
     <>
@@ -62,21 +68,19 @@ export const Recados: any = () => {
           <header className='container-fluid bg-white rounded-4'>
             {/* <!--CABEÇALHO--> */}
             <div className=''>
-              <h1 className='fw-bold text-start p-2'>Meus Recados</h1>
+              <h1 className='fw-bold text-center p-2'>Meus Recados</h1>
               <h2 className='text-center p-2'>
                 Bem vindo -{" "}
                 <span className='text-center text-decoration-underline fs-4 p-2'>
-                  {auth.user?.data.userName}
+                  {userName}
                 </span>
-                {
-                  <button onClick={handleLogout} className='btn btn-primary'>
-                    Sair
-                  </button>
-                }
               </h2>
               <div>
                 <button onClick={newTask} className='btn btn-dark'>
                   Nova Task
+                </button>
+                <button onClick={handleLogout} className='btn btn-primary m-1'>
+                  Sair
                 </button>
                 {/* <Formulario /> */}
               </div>
@@ -102,7 +106,7 @@ export const Recados: any = () => {
                         <button className='btn btn-primary m-1'>Editar</button>
                         <button
                           className='btn btn-danger m-1'
-                          onClick={() => deletTask(task.id)}
+                          onClick={() => handleDeletTask(task.id)}
                         >
                           Apagar
                         </button>

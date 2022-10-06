@@ -15,15 +15,8 @@ export const AuthProvider = ({ children }: { children: JSX.Element }) => {
   useEffect(() => {
     if (userToken) {
       api.validateToken(userToken);
+      api.loadTask(userToken);
     }
-    // if (userToken && usersStorage) {
-    //   //debugger;
-    //   const hasUser = JSON.parse(usersStorage)?.filter(
-    //     (user: any) => user. === JSON.parse(userToken)
-    //   );
-
-    //   if (hasUser) setUser(hasUser[0]);
-    // }
   }, []);
 
   // useEffect(() => {
@@ -40,19 +33,12 @@ export const AuthProvider = ({ children }: { children: JSX.Element }) => {
   //   }
   // };
 
-  const loadTask: any = async (token: string) => {
-    if (userToken) {
-      const tasks = await api.loadTask(token);
-      setUser(tasks.data.data);
-      return true;
-    }
-    return false;
-  };
-
   const signin = async (name: string, pass: string) => {
     const data = await api.signin(name, pass);
     if (data.ok) {
       setUser(data);
+      setUserName(data.data.userName);
+      setUserId(data.data.userId);
       setToken(data.data.token);
       setData(data);
       return true;
@@ -73,8 +59,10 @@ export const AuthProvider = ({ children }: { children: JSX.Element }) => {
   const signout = async () => {
     console.log("signout está sendo executada.");
     setUser(null);
+    setUserName("");
     setToken("");
     setData("");
+    setUserId("");
     await api.logout();
   };
 
@@ -84,6 +72,14 @@ export const AuthProvider = ({ children }: { children: JSX.Element }) => {
 
   const setData = (data: any) => {
     localStorage.setItem("authData", JSON.stringify(data));
+  };
+
+  const setUserName = (data: string) => {
+    localStorage.setItem("authName", JSON.stringify(data));
+  };
+
+  const setUserId = (data: string) => {
+    localStorage.setItem("authId", JSON.stringify(data));
   };
 
   const createTask = async (
@@ -99,9 +95,24 @@ export const AuthProvider = ({ children }: { children: JSX.Element }) => {
     return false;
   };
 
+  const loadTask = async (token: string) => {
+    if (userToken) {
+      const tasks = await api.loadTask(token);
+      setUser(tasks.data);
+      return tasks.data;
+    }
+    return false;
+  };
+
+  const deletTask = async (id: string, token: string) => {
+    const del = await api.deletTask(id, token);
+    console.log(del);
+    return del;
+  };
+
   return (
     <AuthContext.Provider
-      value={{ user, signin, signup, signout, createTask, loadTask }}
+      value={{ user, signin, signup, signout, createTask, loadTask, deletTask }}
     >
       {children}
     </AuthContext.Provider>

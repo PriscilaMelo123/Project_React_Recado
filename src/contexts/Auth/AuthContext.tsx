@@ -11,7 +11,8 @@ export type AuthContextType = {
     detail: string,
     token: string
   ) => Promise<boolean>;
-  loadTask: (token: string) => Promise<Recado>;
+  loadTask: (token: string) => Promise<any>;
+  deletTask: (id: string, token: string) => Promise<any>;
 };
 
 export const AuthContext = createContext<AuthContextType>(null!);

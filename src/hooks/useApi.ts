@@ -36,4 +36,10 @@ export const useApi = () => ({
     const response = await api.post("/logout");
     return response.status;
   },
+
+  deletTask: async (id: string, token: string) => {
+    const response = await api.delete(`/task/${id}?token=${token}`);
+    console.log(response);
+    return response.data;
+  },
 });
