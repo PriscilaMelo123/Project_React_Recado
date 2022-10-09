@@ -1,20 +1,15 @@
-import React from "react";
-import axios from "axios";
 import { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../../contexts/Auth/AuthContext";
 import "./Recados.css";
-import { api, useApi } from "../../hooks/useApi";
 import { useNavigate } from "react-router-dom";
-import { hasSubscribers } from "diagnostics_channel";
 import { Recado } from "../../types/User";
 
 export const Recados: any = () => {
   const auth = useContext(AuthContext);
   const navigate = useNavigate();
+
   const userToken = localStorage.getItem("authToken");
   const userName = localStorage.getItem("authName");
-  const userId = localStorage.getItem("authId");
-
   const usersStorage = localStorage.getItem("authData");
 
   const [tasks, setTasks] = useState<Recado[]>([]);
@@ -32,32 +27,25 @@ export const Recados: any = () => {
     if (userToken) {
       const tasks = await auth.loadTask(userToken);
       setTasks(tasks);
+      console.log("recados");
     }
   };
-
-  // const handleDeletTask = async (id: string) => {
-  //   if (auth.user?.ok && userToken) {
-  //     debugger;
-  //     const del = await auth.deletTask(id, userToken);
-  //     console.log(del);
-  //   }
-  //   handleLoadTask();
-  // };
 
   async function handleDeletTask(id: string) {
     if (usersStorage != null) {
       const teste = JSON.parse(usersStorage);
       if (teste.ok && userToken) {
-        const del = await auth.deletTask(id, userToken);
-        //debugger;
-        console.log(del);
+        await auth.deletTask(id, userToken);
       }
     }
     handleLoadTask();
   }
 
+  function handleEditTask(id: string) {
+    navigate(`/edit_tasks/${id}`);
+  }
+
   useEffect(() => {
-    //debugger;
     handleLoadTask();
   }, []);
 
@@ -66,7 +54,6 @@ export const Recados: any = () => {
       <div className='container mt-5 rounded-4 shadow'>
         <div className='row bg-white rounded-4 align-items-md-stretch'>
           <header className='container-fluid bg-white rounded-4'>
-            {/* <!--CABEÇALHO--> */}
             <div className=''>
               <h1 className='fw-bold text-center p-2'>Meus Recados</h1>
               <h2 className='text-center p-2'>
@@ -82,13 +69,12 @@ export const Recados: any = () => {
                 <button onClick={handleLogout} className='btn btn-primary m-1'>
                   Sair
                 </button>
-                {/* <Formulario /> */}
               </div>
             </div>
           </header>
           <main>
             {/* <!--LISTA RECADOS--> */}
-            <div className='m-2 table-responsive'>
+            <div className='m-2 table-responsive '>
               <table className='table table-hover align-middle' id='note-table'>
                 <thead className=''>
                   <tr className='fw-bold text-start'>
@@ -103,7 +89,12 @@ export const Recados: any = () => {
                       <td className='text-start'>{task.description}</td>
                       <td className='text-start'>{task.detail}</td>
                       <td>
-                        <button className='btn btn-primary m-1'>Editar</button>
+                        <button
+                          className='btn btn-primary m-1'
+                          onClick={() => handleEditTask(task.id)}
+                        >
+                          Editar
+                        </button>
                         <button
                           className='btn btn-danger m-1'
                           onClick={() => handleDeletTask(task.id)}

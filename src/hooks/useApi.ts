@@ -1,6 +1,5 @@
 /* eslint-disable no-unreachable */
 import axios from "axios";
-import { Recados } from "../components/Recados/Recados";
 
 export const api = axios.create({
   baseURL: process.env.REACT_APP_API,
@@ -39,6 +38,22 @@ export const useApi = () => ({
 
   deletTask: async (id: string, token: string) => {
     const response = await api.delete(`/task/${id}?token=${token}`);
+    return response.data;
+  },
+
+  editTask: async (
+    id: string,
+    description: string,
+    detail: string,
+    token: string
+  ) => {
+    const response = await api.put("/task/", {
+      id,
+      description,
+      detail,
+      token,
+    });
+    debugger;
     console.log(response);
     return response.data;
   },

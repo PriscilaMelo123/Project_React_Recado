@@ -5,6 +5,7 @@ import { AuthContext } from "../../contexts/Auth/AuthContext";
 export const Login = () => {
   const auth = useContext(AuthContext);
   const navigate = useNavigate();
+  const userToken = localStorage.getItem("authToken");
 
   const [name, setEmail] = useState("");
   const [pass, setPassword] = useState("");
@@ -20,8 +21,9 @@ export const Login = () => {
   const handleLogin = async () => {
     if (name && pass) {
       const isLogged = await auth.signin(name, pass);
-      if (isLogged) {
+      if (isLogged || userToken) {
         navigate("/private");
+        //auth.loadTask(userToken);
       } else {
         alert("Não deu certo.");
       }

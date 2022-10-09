@@ -1,5 +1,4 @@
-import { useContext, useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
 import { useApi } from "../../hooks/useApi";
 import { Login } from "../../types/User";
 import { AuthContext } from "./AuthContext";
@@ -7,31 +6,16 @@ import { AuthContext } from "./AuthContext";
 export const AuthProvider = ({ children }: { children: JSX.Element }) => {
   const [user, setUser] = useState<Login | null>(null);
   const api = useApi();
-  const auth = useContext(AuthContext);
 
   const userToken = localStorage.getItem("authToken");
-  const usersStorage = localStorage.getItem("authData");
-
-  useEffect(() => {
-    if (userToken) {
-      api.validateToken(userToken);
-      api.loadTask(userToken);
-    }
-  }, []);
 
   // useEffect(() => {
-  //   validateToken();
-  // }, []);
-
-  // const validateToken = async () => {
-  //   const storageData = localStorage.getItem("authToken");
-  //   if (storageData) {
-  //     const data = await api.loadTask(storageData);
-  //     if (data.ok) {
-  //       setUser(data);
-  //     }
+  //   if (userToken) {
+  //     //api.validateToken(userToken);
+  //     api.loadTask(userToken);
+  //     console.log("authprovider");
   //   }
-  // };
+  // }, []);
 
   const signin = async (name: string, pass: string) => {
     const data = await api.signin(name, pass);
@@ -66,6 +50,49 @@ export const AuthProvider = ({ children }: { children: JSX.Element }) => {
     await api.logout();
   };
 
+  const createTask = async (
+    description: string,
+    detail: string,
+    token: string
+  ) => {
+    const data = await api.createTask(description, detail, token);
+    if (data.ok) {
+      setUser(data);
+      return true;
+    }
+    return false;
+  };
+
+  const loadTask = async (token: string) => {
+    if (userToken) {
+      const data = await api.loadTask(token);
+      setUser(data.data);
+      return data.data;
+    }
+    return false;
+  };
+
+  const deletTask = async (id: string, token: string) => {
+    const data = await api.deletTask(id, token);
+    return data;
+  };
+
+  const editTask = async (
+    id: string,
+    description: string,
+    detail: string,
+    token: string
+  ) => {
+    const data = await api.editTask(id, description, detail, token);
+    debugger;
+    console.log(data);
+    if (data.ok) {
+      setUser(data);
+      return true;
+    }
+    return false;
+  };
+
   const setToken = (token: string) => {
     localStorage.setItem("authToken", token);
   };
@@ -82,37 +109,18 @@ export const AuthProvider = ({ children }: { children: JSX.Element }) => {
     localStorage.setItem("authId", JSON.stringify(data));
   };
 
-  const createTask = async (
-    description: string,
-    detail: string,
-    token: string
-  ) => {
-    const data = await api.createTask(description, detail, token);
-    if (data.ok) {
-      setUser(data);
-      return true;
-    }
-    return false;
-  };
-
-  const loadTask = async (token: string) => {
-    if (userToken) {
-      const tasks = await api.loadTask(token);
-      setUser(tasks.data);
-      return tasks.data;
-    }
-    return false;
-  };
-
-  const deletTask = async (id: string, token: string) => {
-    const del = await api.deletTask(id, token);
-    console.log(del);
-    return del;
-  };
-
   return (
     <AuthContext.Provider
-      value={{ user, signin, signup, signout, createTask, loadTask, deletTask }}
+      value={{
+        user,
+        signin,
+        signup,
+        signout,
+        createTask,
+        loadTask,
+        deletTask,
+        editTask,
+      }}
     >
       {children}
     </AuthContext.Provider>

@@ -24,9 +24,7 @@ export interface Data {
 }
 
 export interface Recado {
-  id: string;
-  description: string;
-  detail: string;
-  created_at: string;
-  updated_at: string;
+  id: any;
+  description?: string;
+  detail?: string;
 }

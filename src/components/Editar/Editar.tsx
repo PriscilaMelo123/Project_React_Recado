@@ -1,15 +1,16 @@
-import { ChangeEvent, useContext, useState } from "react";
-import { Button, Form } from "react-bootstrap";
-import { useNavigate } from "react-router-dom";
+import { useContext, useState, ChangeEvent } from "react";
+import { Form, Button } from "react-bootstrap";
+import { useNavigate, useParams } from "react-router-dom";
 import { AuthContext } from "../../contexts/Auth/AuthContext";
 
-export const Formulario: any = () => {
+export const Editar: any = () => {
   const auth = useContext(AuthContext);
   const navigate = useNavigate();
 
   const userName = localStorage.getItem("authName");
   const userToken = localStorage.getItem("authToken");
 
+  const params = useParams();
   const [description, setDescription] = useState("");
   const [detail, setDetail] = useState("");
 
@@ -21,17 +22,21 @@ export const Formulario: any = () => {
     setDetail(event.target.value);
   };
 
-  async function handleCreateTask() {
-    setDescription(description);
-    setDetail(detail);
-    if (userToken) {
-      await auth.createTask(description, detail, userToken);
-    }
-    navigate("/private");
-  }
-
   function voltar() {
     navigate("/tasks");
+  }
+
+  async function handleEditTask() {
+    setDescription(description);
+    setDetail(detail);
+    debugger;
+    if (params) {
+      const id = params.id;
+      if (userToken && id) {
+        await auth.editTask(id, description, detail, userToken);
+      }
+    }
+    navigate("/private");
   }
 
   return (
@@ -59,13 +64,15 @@ export const Formulario: any = () => {
       <div className='container shadow'>
         <Form
           className='row  mt-2 bg-white rounded-4'
-          onSubmit={handleCreateTask}
+          onSubmit={handleEditTask}
         >
           <Form.Group className='col-12 col-sm-12 m-1'>
             <Form.Control
               type='text'
               placeholder='Descrição'
               name='description'
+              id='description'
+              //value={result?.description}
               onChange={handleDescriptionInput}
             />
           </Form.Group>
@@ -74,6 +81,8 @@ export const Formulario: any = () => {
               type='text'
               placeholder='Detalhamento'
               name='detail'
+              id='detail'
+              //value={result?.detail}
               onChange={handleDetailInput}
             />
           </Form.Group>

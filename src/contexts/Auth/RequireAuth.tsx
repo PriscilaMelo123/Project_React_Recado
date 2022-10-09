@@ -1,14 +1,20 @@
-import { useContext } from "react";
-import { CriarLogin } from "../../pages/CriarLogin";
+import { useContext, useEffect } from "react";
+import { Login } from "../../pages/Login";
 import { AuthContext } from "./AuthContext";
 
 export const RequireAuth = ({ children }: { children: JSX.Element }) => {
   const auth = useContext(AuthContext);
-
   const userToken = localStorage.getItem("authToken");
 
-  if (!userToken) {
-    return <CriarLogin />;
+  // useEffect(() => {
+  //   if (userToken) {
+  //     auth.loadTask(userToken);
+  //     console.log("requireauth");
+  //   }
+  // }, []);
+
+  if (!userToken || !auth.user) {
+    return <Login />;
   }
 
   return children;

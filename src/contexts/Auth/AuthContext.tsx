@@ -1,5 +1,5 @@
 import { createContext } from "react";
-import { Login, Recado } from "../../types/User";
+import { Login } from "../../types/User";
 
 export type AuthContextType = {
   user: Login | null;
@@ -10,9 +10,15 @@ export type AuthContextType = {
     description: string,
     detail: string,
     token: string
-  ) => Promise<boolean>;
+  ) => Promise<any>;
   loadTask: (token: string) => Promise<any>;
   deletTask: (id: string, token: string) => Promise<any>;
+  editTask: (
+    id: string,
+    description: string,
+    detail: string,
+    token: string
+  ) => Promise<any>;
 };
 
 export const AuthContext = createContext<AuthContextType>(null!);
